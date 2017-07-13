@@ -10,7 +10,7 @@ yves.inspect({
     bool: false,
     nil: null,
     undef: undefined,
-    object: {attr: []}
+    object: {attr: []},
 }, "native types");
 
 yves.inspect({
