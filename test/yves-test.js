@@ -95,3 +95,30 @@ yves.inspect({
     maxArrayLength: 2,
     maxStringLength: 39
 });
+
+yves.inspect({
+    number: 42,
+    string: "John Galt",
+    regexp: /[a-z]+/,
+    array: [99, 168, 'x', {}],
+    func: function () {},
+    bool: false,
+    nil: null,
+    undef: undefined,
+    joris: 'gek',
+    object: {attr: []},
+}, "includes",{includes: ['joris']});
+
+yves.inspect({
+    number: 42,
+    string: "John Galt",
+    regexp: /[a-z]+/,
+    array: [99, 168, 'x', {}],
+    func: function () {},
+    bool: false,
+    nil: null,
+    undef: undefined,
+    joris: 'gek',
+    object: {attr: []},
+}, "excludes",{excludes: ['joris']});
+
