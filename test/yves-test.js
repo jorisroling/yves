@@ -106,8 +106,10 @@ yves.inspect({
     nil: null,
     undef: undefined,
     joris: 'gek',
+    jules: 'rules',
+    wolf: 'lief',
     object: {attr: []},
-}, "includes",{includes: ['joris']});
+}, "includes",{includes: [/^joris/, 'jules', /.*olf/]});
 
 yves.inspect({
     number: 42,
@@ -119,6 +121,24 @@ yves.inspect({
     nil: null,
     undef: undefined,
     joris: 'gek',
+    jules: 'rules',
+    wolf: 'lief',
     object: {attr: []},
-}, "excludes",{excludes: ['joris']});
+}, "excludes",{excludes: [/^joris/, 'jules', /.*olf/]});
+
+
+yves.inspect({
+    number: 42,
+    string: "John Galt",
+    regexp: /[a-z]+/,
+    array: [99, 168, 'x', {}],
+    func: function () {},
+    bool: false,
+    nil: null,
+    undef: undefined,
+    joris: 'gek',
+    jules: 'rules',
+    wolf: 'lief',
+    object: {attr: []},
+}, "obfuscates",{obfuscates: [/^joris/, 'jules', /.*olf/]});
 
