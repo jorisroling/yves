@@ -2,6 +2,10 @@
 # yarn lockfile v1
 
 
+arguments-to-array@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/arguments-to-array/-/arguments-to-array-1.0.0.tgz#ceee6ab88c4961ca55662477572439134170eca0"
+
 debug@^3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/debug/-/debug-3.1.0.tgz#5bb5a0672628b64149566ba16819e61518c67261"
