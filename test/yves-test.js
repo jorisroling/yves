@@ -142,3 +142,14 @@ yves.inspect({
     object: {attr: []},
 }, "obfuscates",{obfuscates: [/^joris/, 'jules', /.*olf/]});
 
+
+
+const debug = yves.debugger('test')
+debug('hello')
+debug('world')
+
+yves.console('yves-test')
+
+console.log('hello')
+console.log('world')
+
