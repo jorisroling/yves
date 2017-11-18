@@ -143,6 +143,22 @@ yves.inspect({
 }, "obfuscates",{obfuscates: [/^joris/, 'jules', /.*olf/]});
 
 
+yves.inspect({
+    number: 42,
+    string: "John Galt",
+    regexp: /[a-z]+/,
+    array: [99, 168, 'x', {}],
+    func: function () {},
+    bool: false,
+    nil: null,
+    undef: undefined,
+    joris: 'gek',
+    jules: 'rules',
+    wolf: 'lief',
+    object: {attr: []},
+}, "html",{html: true});
+
+
 
 const debug = yves.debugger('test')
 debug('hello')

@@ -2982,7 +2982,7 @@ yves.inspect = function (obj, label, options) {
 // versus a printable character (`c`). So we resort to counting the
 // length manually.
 yves.print = function (str, label, options) {
-    if (!this.html) {
+    if (!options.html) {
         for (var c = 0, i = 0; i < str.length; i++) {
             if (str.charAt(i) === '\x1b') { i += 4 } // `4` because '\x1b[25m'.length + 1 == 5
             else if (c === options.maxLength) {
@@ -2994,11 +2994,11 @@ yves.print = function (str, label, options) {
     if (options.stream) {
       return options.stream.write.call(options.stream, (label ?
           this.stylize(label, options.styles.label, options) + ': ' : '') +
-          this.stylize(str,   options.styles.all, options) + (this.html?'':(options.colors?'\x1b[0m':'')) + "\n");
+          this.stylize(str,   options.styles.all, options) + (options.html?'':(options.colors?'\x1b[0m':'')) + "\n");
     } else {
       return (label ?
           this.stylize(label, options.styles.label, options) + ': ' : '') +
-          this.stylize(str,   options.styles.all, options) + (this.html?'':(options.colors?'\x1b[0m':'')) ;
+          this.stylize(str,   options.styles.all, options) + (options.html?'':(options.colors?'\x1b[0m':'')) ;
     }
 };
 
