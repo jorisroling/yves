@@ -2786,7 +2786,7 @@ process.umask = function() { return 0; };
 module.exports = false;
 
 },{}],13:[function(require,module,exports){
-(function (process,Buffer){
+(function (process,Buffer,__dirname){
 //
 // Yves - a customizable value inspector for Node.js
 //
@@ -2804,7 +2804,6 @@ var sortobject = require('deep-sort-object');
 var supportsColor = require('supports-color')
 var debug = require('debug');
 var argumentsToArray = require('arguments-to-array');
-
 var stack = [];
 
 
@@ -2894,18 +2893,20 @@ yves.inspector = function (options) {
     };
 };
 
-
 yves.debugger = function(namespace, options) {
   if (!namespace && !options) {
     return debug;
   } else if (!options) {
     var deb=debug(namespace);
-    yves.console_intercept();
     return function() {
-      yves.console_unset();
-      var result=Function.prototype.apply.call(deb, yves, arguments)
-      yves.console_set()
-      return result
+      if (yves._console) {
+        yves.console_unset();
+        var result=Function.prototype.apply.call(deb, yves, arguments)
+        yves.console_set()
+        return result
+      } else {
+        return deb;
+      }
     }
   } else {
     debug.formatters[namespace] = (y) => {
@@ -2921,49 +2922,96 @@ if (!debug.formatters.y) debug.formatters.y = (y) => {
 yves.debugger('y',{ stream: null });
 yves.debugger('Y',{stream: null, sortKeys: true, hideFunctions: true, singleLineMax: 0 });
 
+yves.path = function() {
+  console.log(__dirname)
+  return __dirname;
+}
+
 yves._console = null;
 yves._console_namespace = '';
 yves.console = function(namespace) {
   if (!namespace) namespace='';
   if (namespace.length && namespace[namespace.length-1]!=':') namespace+=':'
   yves._console_namespace = namespace
-  yves.console_intercept();
+  yves.console_setup();
   yves.console_set()
 }
 
-yves.console_intercept = function() 
-{
-  if (!yves._console) yves._console={
-    log: console.log,
-    info: console.info,
-    warn: console.warn,
-    error: console.error,
-    dir: console.dir,
-  }
-}
-yves.console_set = function() {
-  var debugLog = yves.debugger(yves._console_namespace+'console:log')
-  console.log = function() {yves.console_unset();var result=debugLog.apply(yves,argumentsToArray(arguments));yves.console_set();return result}
-  var debugInfo = yves.debugger(yves._console_namespace+'console:info')
-  console.info = function() {yves.console_unset();var result=debugInfo.apply(yves,arguments);yves.console_set();return result}
-  var debugWarn = yves.debugger(yves._console_namespace+'console:warn')
-  console.warn = function() {yves.console_unset();var result=debugWarn.apply(yves,arguments);yves.console_set();return result}
-  var debugError = yves.debugger(yves._console_namespace+'console:error')
-  console.error = function() {yves.console_unset();var result=debugError.apply(yves,arguments);yves.console_set();return result}
-  var debugDir = yves.debugger(yves._console_namespace+'console:dir')
-  console.dir = function() {
-    var args=argumentsToArray(arguments)
-    args.unshift('%y')
-    yves.console_unset();var result=debugDir.apply(yves,args);yves.console_set();return result
+yves.console_setup = function() {
+  if (!yves._console) {
+    yves._console={
+      log: console.log,
+      info: console.info,
+      warn: console.warn,
+      error: console.error,
+      dir: console.dir,
+    }
   }
 }
 
+yves.debugLog = yves.debugger(yves._console_namespace+'console:log')
+yves.logLevel = 0
+yves.log = function() {
+  var result
+  if (yves.logLevel++) {
+    result=Function.prototype.apply.call(yves._console.log?yves._console.log:console.log, yves, arguments)
+  } else {
+    result=Function.prototype.apply.call(yves.debugLog,yves,arguments);
+  }
+  setTimeout(function() {yves.logLevel--},20)
+  return result
+}
+
+yves.debugInfo = yves.debugger(yves._console_namespace+'console:info')
+yves.info = function() {
+  yves.console_unset();
+  var result=Function.prototype.apply.call(yves.debugInfo,yves,arguments);
+  yves.console_set();
+  return result
+}
+
+yves.debugWarn = yves.debugger(yves._console_namespace+'console:warn')
+yves.warn = function() {
+  yves.console_unset();
+  var result=Function.prototype.apply.call(yves.debugWarn,yves,arguments);
+  yves.console_set();
+  return result
+}
+
+yves.debugError = yves.debugger(yves._console_namespace+'console:error')
+yves.error = function() {
+  yves.console_unset();
+  var result=Function.prototype.apply.call(yves.debugError,yves,arguments);
+  yves.console_set();
+  return result
+}
+
+yves.debugDir = yves.debugger(yves._console_namespace+'console:dir')
+yves.dir = function() {
+  var args=argumentsToArray(arguments)
+  args.unshift('%y')
+  yves.console_unset();
+  var result=Function.prototype.apply.call(yves.debugDir,yves,args);
+  yves.console_set();
+  return result
+}
+    
+yves.console_set = function() {
+  console.log = yves.log
+  console.info = yves.info
+  console.warn = yves.warn
+  console.error = yves.error
+  console.dir = yves.dir
+}
+
 yves.console_unset = function() {
-  console.log = yves._console.log
-  console.info = yves._console.info
-  console.warn = yves._console.warn
-  console.error = yves._console.error
-  console.dir = yves._console.dir
+  if (yves._console) {
+    if (yves._console.log) console.log = yves._console.log
+    if (yves._console.info) console.info = yves._console.info
+    if (yves._console.warn) console.warn = yves._console.warn
+    if (yves._console.error) console.error = yves._console.error
+    if (yves._console.dir) console.dir = yves._console.dir
+  }
 }
 
 // If we have a `stream` defined, use it to print a styled string,
@@ -3246,7 +3294,9 @@ function stringifyObject(obj, options, level) {
 
     // Slice the keys to the maximum length if they exceed the maxObjectKeys option
     var includeKeys = (truncate) ? keys.slice(0, options.maxObjectKeys) : keys;
-    includeKeys.forEach(function (k) {
+    if (includeKeys) for (var ki in includeKeys) {
+      var k = includeKeys[ki]
+    // includeKeys.forEach(function (k) {
   		if (!(level== 1 && options.exclude && ~options.exclude.indexOf(k))) {
   			if (Object.prototype.hasOwnProperty.call(obj, k)
           && (!yvesExclude(k, options.excludes))
@@ -3257,7 +3307,7 @@ function stringifyObject(obj, options, level) {
   						 stringify((yvesObfuscate(k,options.obfuscates)) ? '<<obfuscated>>' : obj[k], options));
   			}
   		}
-    })
+    }
 
     // Append a special String if the Object was truncated
     if (includeKeys.length < keys.length) {
@@ -3281,9 +3331,11 @@ function typeOf(value) {
 
     if (s === 'object' || s === 'function') {
         if (value) {
-            types.forEach(function (t) {
-                if (value instanceof t) { s = t.name.toLowerCase() }
-            });
+          if (types) for (var ti in types) {
+            var t = types[ti]
+            // types.forEach(function (t) {
+            if (value instanceof t) { s = t.name.toLowerCase() }
+          }
         } else { s = 'null' }
     }
     return s;
@@ -3293,8 +3345,13 @@ function merge(/* variable args */) {
     var objs = Array.prototype.slice.call(arguments);
     var target = {};
 
-    objs.forEach(function (o) {
-        Object.keys(o).forEach(function (k) {
+    if (objs) for (var oi in objs) {
+      var o = objs[oi]
+    // objs.forEach(function (o) {
+      var oks=Object.keys(o)
+      if (oks) for (var oki in oks) {
+        var k = oks[oki]
+        // Object.keys(o).forEach(function (k) {
             if (k === 'styles') {
                 if (! o.styles) {
                     target.styles = false;
@@ -3307,12 +3364,12 @@ function merge(/* variable args */) {
             } else {
                 target[k] = o[k];
             }
-        });
-    });
+        }
+    }
     return target;
 }
 
 module.exports = yves;
-}).call(this,require('_process'),require("buffer").Buffer)
+}).call(this,require('_process'),require("buffer").Buffer,"/lib")
 },{"_process":11,"arguments-to-array":1,"buffer":3,"debug":4,"deep-sort-object":6,"supports-color":12}]},{},[13])(13)
 });
