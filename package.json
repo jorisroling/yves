@@ -1,6 +1,6 @@
 {
   "name": "yves",
-  "version": "1.0.21",
+  "version": "1.0.26",
   "description": "a customizable value inspector",
   "url": "http://github.com/jorisroling/yves",
   "repository": {
@@ -30,7 +30,8 @@
   "main": "./lib/yves",
   "scripts": {
     "test": "DEBUG=* node test/*-test.js",
-    "build": "browserify --standalone yves . > dist/yves.js"
+    "build": "browserify --standalone yves . > dist/yves.js",
+    "prepublish": "npm run build"
   },
   "directories": {
     "lib": "./lib",
