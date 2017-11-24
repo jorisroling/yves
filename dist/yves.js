@@ -3111,7 +3111,6 @@ yves.debugger = function(namespace, options) {
   if (!namespace && !options) {
     return debug;
   } else if (!options) {
-    debugger
     var deb=debug(namespace);
     return function() {
       if (yves._console) {
