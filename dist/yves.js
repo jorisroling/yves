@@ -3115,7 +3115,8 @@ yves.debugger = function(namespace, options) {
     var deb=debug(namespace);
     return function() {
       if (yves._console) {
-        yves.console_unset();
+        if (yves.logLevel && verbose) console.info('log3 level %d',yves.logLevel, arguments)
+        yves.console_unset();        
         var result=Function.prototype.apply.call(deb, yves, arguments)
         yves.console_set()
         return result
@@ -3149,6 +3150,13 @@ yves.console = function(namespace) {
   if (!namespace) namespace='';
   if (namespace.length && namespace[namespace.length-1]!=':') namespace+=':'
   yves._console_namespace = namespace
+    
+  yves.debugLog = yves.debugger(yves._console_namespace+'console:log')
+  yves.debugInfo = yves.debugger(yves._console_namespace+'console:info')
+  yves.debugWarn = yves.debugger(yves._console_namespace+'console:warn')
+  yves.debugError = yves.debugger(yves._console_namespace+'console:error')
+  yves.debugDir = yves.debugger(yves._console_namespace+'console:dir')
+    
   yves.console_setup();
   yves.console_set()
 }
@@ -3165,49 +3173,51 @@ yves.console_setup = function() {
   }
 }
 
-yves.debugLog = yves.debugger(yves._console_namespace+'console:log')
+yves.debugLog = null
 yves.logLevel = 0
 yves.log = function() {
   var result
+  if (verbose) console.info('log level %d',yves.logLevel)
   if (yves.logLevel++) {
     result=Function.prototype.apply.call(yves._console.log?yves._console.log:console.log, yves, arguments)
   } else {
-    result=Function.prototype.apply.call(yves.debugLog,yves,arguments);
+    if (verbose) console.info('log2 level %d',yves.logLevel)
+    result=Function.prototype.apply.call(yves.debugLog?yves.debugLog:(yves._console.log?yves._console.log:console.log),yves,arguments);
   }
   setTimeout(function() {yves.logLevel--},20)
   return result
 }
 
-yves.debugInfo = yves.debugger(yves._console_namespace+'console:info')
+yves.debugInfo = null
 yves.info = function() {
   yves.console_unset();
-  var result=Function.prototype.apply.call(yves.debugInfo,yves,arguments);
+  var result=Function.prototype.apply.call(yves.debugInfo?yves.debugInfo:(yves._console.info?yves._console.info:console.info),yves,arguments);
   yves.console_set();
   return result
 }
 
-yves.debugWarn = yves.debugger(yves._console_namespace+'console:warn')
+yves.debugWarn = null
 yves.warn = function() {
   yves.console_unset();
-  var result=Function.prototype.apply.call(yves.debugWarn,yves,arguments);
+  var result=Function.prototype.apply.call(yves.debugWarn?yves.debugWarn:(yves._console.warn?yves._console.warn:console.warn),yves,arguments);
   yves.console_set();
   return result
 }
 
-yves.debugError = yves.debugger(yves._console_namespace+'console:error')
+yves.debugError = null
 yves.error = function() {
   yves.console_unset();
-  var result=Function.prototype.apply.call(yves.debugError,yves,arguments);
+  var result=Function.prototype.apply.call(yves.debugError?yves.debugError:(yves._console.error?yves._console.error:console.error),yves,arguments);
   yves.console_set();
   return result
 }
 
-yves.debugDir = yves.debugger(yves._console_namespace+'console:dir')
+yves.debugDir = null
 yves.dir = function() {
   var args=argumentsToArray(arguments)
   args.unshift('%y')
   yves.console_unset();
-  var result=Function.prototype.apply.call(yves.debugDir,yves,args);
+  var result=Function.prototype.apply.call(yves.debugDir?yves.debugDir:(yves._console.dir?yves._console.dir:console.dir),yves,args);
   yves.console_set();
   return result
 }
