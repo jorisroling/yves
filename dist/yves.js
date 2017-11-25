@@ -3111,19 +3111,21 @@ yves.debugger = function(namespace, options) {
   if (!namespace && !options) {
     return debug;
   } else if (!options) {
-    var deb=debug(namespace);
-    return function() {
-      if (yves._console) {
-        if (yves.logLevel && verbose) console.info('log3 level %d',yves.logLevel, arguments)
-        yves.console_unset();        
-        var result=Function.prototype.apply.call(deb, yves, arguments)
-        yves.console_set()
-        return result
-      } else {
-        var result=Function.prototype.apply.call(deb, yves, arguments)
-        return result;
-      }
-    }
+    var deb = debug(namespace);
+    deb.log = (yves._console && yves._console.log)?yves._console.log.bind(console):console.log.bind(console);
+    return deb;
+    // return function() {
+    //   if (yves._console) {
+    //     if (yves.logLevel && verbose) console.info('log3 level %d',yves.logLevel, arguments)
+    //     yves.console_unset();
+    //     var result=Function.prototype.apply.call(deb, yves, arguments)
+    //     yves.console_set()
+    //     return result
+    //   } else {
+    //     var result=Function.prototype.apply.call(deb, yves, arguments)
+    //     return result;
+    //   }
+    // }
   } else {
     debug.formatters[namespace] = (y) => {
       return yves.inspector()(y, null, Object.assign(options,{ stream: null }))
