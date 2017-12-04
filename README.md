@@ -10,10 +10,6 @@ I was tired of looking at cluttered output in the console -- something needed to
 `sys.inspect()` didn't display regexps correctly, and was too verbose, and I had an hour or two to spare. 
 So I decided to have some fun. _yves_ were born.
 
-![yves-ss](http://dl.dropbox.com/u/251849/yves-js-ss.gif)
-
-_example of the output of a user-customized yves inspector_
-
 *yves* also deals with circular objects in an intelligent way, and can pretty-print object literals.
 
 usage
