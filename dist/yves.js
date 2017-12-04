@@ -2961,7 +2961,10 @@ process.umask = function() { return 0; };
 
 },{}],13:[function(require,module,exports){
 'use strict';
-module.exports = false;
+module.exports = {
+	stdout: false,
+	stderr: false
+};
 
 },{}],14:[function(require,module,exports){
 (function (process,Buffer){
