@@ -3224,7 +3224,7 @@ yves.inspect = function (obj, label, options) {
 // length manually.
 yves.print = function (str, label, options) {
     if (!options.html) {
-        for (var c = 0, i = 0; i < str.length; i++) {
+        if (str) for (var c = 0, i = 0; i < str.length; i++) {
             if (str.charAt(i) === '\x1b') { i += 4 } // `4` because '\x1b[25m'.length + 1 == 5
             else if (c === options.maxLength) {
                str = str.slice(0, i - 1) + '…';
