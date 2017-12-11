@@ -169,3 +169,4 @@ yves.console('yves-test')
 console.log('hello')
 console.log('world')
 
+console.dir({joris:'gek'})

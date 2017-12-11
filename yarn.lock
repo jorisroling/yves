@@ -13,10 +13,6 @@ acorn@^4.0.3:
   version "4.0.13"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-4.0.13.tgz#105495ae5361d697bd195c825192e1ad7f253787"
 
-arguments-to-array@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/arguments-to-array/-/arguments-to-array-1.0.0.tgz#ceee6ab88c4961ca55662477572439134170eca0"
-
 array-filter@~0.0.0:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/array-filter/-/array-filter-0.0.1.tgz#7da8cf2e26628ed732803581fd21f67cacd2eeec"

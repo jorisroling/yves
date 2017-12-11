@@ -177,19 +177,6 @@ if (typeof JSON.retrocycle !== "function") {
     };
 }
 },{}],2:[function(require,module,exports){
-/**
- * Make your function arguments an array
- */
-
-
-"use strict";
-
-
-exports = module.exports = function(args) {
-    return Array.prototype.slice.call(args);
-};
-
-},{}],3:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -305,7 +292,7 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],4:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -2021,7 +2008,7 @@ function numberIsNaN (obj) {
   return obj !== obj // eslint-disable-line no-self-compare
 }
 
-},{"base64-js":3,"ieee754":8}],5:[function(require,module,exports){
+},{"base64-js":2,"ieee754":7}],4:[function(require,module,exports){
 (function (process){
 /**
  * This is the web browser implementation of `debug()`.
@@ -2220,7 +2207,7 @@ function localstorage() {
 }
 
 }).call(this,require('_process'))
-},{"./debug":6,"_process":12}],6:[function(require,module,exports){
+},{"./debug":5,"_process":11}],5:[function(require,module,exports){
 
 /**
  * This is the common logic for both the Node.js and web browser
@@ -2447,7 +2434,7 @@ function coerce(val) {
   return val;
 }
 
-},{"ms":11}],7:[function(require,module,exports){
+},{"ms":10}],6:[function(require,module,exports){
 'use strict';
 
 var isPlainObject = require('is-plain-object');
@@ -2480,7 +2467,7 @@ function sort(src, comparator) {
 
 module.exports = sort;
 
-},{"is-plain-object":9}],8:[function(require,module,exports){
+},{"is-plain-object":8}],7:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = nBytes * 8 - mLen - 1
@@ -2566,7 +2553,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],9:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /*!
  * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
  *
@@ -2605,7 +2592,7 @@ module.exports = function isPlainObject(o) {
   return true;
 };
 
-},{"isobject":10}],10:[function(require,module,exports){
+},{"isobject":9}],9:[function(require,module,exports){
 /*!
  * isobject <https://github.com/jonschlinkert/isobject>
  *
@@ -2619,7 +2606,7 @@ module.exports = function isObject(val) {
   return val != null && typeof val === 'object' && Array.isArray(val) === false;
 };
 
-},{}],11:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 /**
  * Helpers.
  */
@@ -2773,7 +2760,7 @@ function plural(ms, n, name) {
   return Math.ceil(ms / n) + ' ' + name + 's';
 }
 
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -2959,14 +2946,14 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 'use strict';
 module.exports = {
 	stdout: false,
 	stderr: false
 };
 
-},{}],14:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 (function (process,Buffer){
 //
 // Yves - a customizable value inspector for Node.js
@@ -2986,7 +2973,6 @@ require('./cycle.js')
 var sortobject = require('deep-sort-object');
 var supportsColor = require('supports-color')
 var debug = require('debug');
-var argumentsToArray = require('arguments-to-array');
 var stack = [];
 
 var verbose = false;
@@ -3021,7 +3007,7 @@ function isCyclic (obj) {
 }
 
 var yves = function() {
-  var args=arguments;//argumentsToArray(arguments)
+  var args=arguments;
   var rslt=[];
   if (args) for (var a in args) {
     rslt.push(yves.inspector({stream:null})(args[a]))
@@ -3183,8 +3169,8 @@ yves.error = function() {
 
 yves.debugDir = null
 yves.dir = function() {
-  var args=argumentsToArray(arguments)
-  args.unshift('%y')
+  let args=['%y']
+  for (var a in arguments) args.push(arguments[a])
   var result=Function.prototype.apply.call(yves.debugDir?yves.debugDir:(yves._console.dir?yves._console.dir:console.dir),yves,args);
   return result
 }
@@ -3636,5 +3622,5 @@ function merge(/* variable args */) {
 
 module.exports = yves;
 }).call(this,require('_process'),require("buffer").Buffer)
-},{"./cycle.js":1,"_process":12,"arguments-to-array":2,"buffer":4,"debug":5,"deep-sort-object":7,"supports-color":13}]},{},[14])(14)
+},{"./cycle.js":1,"_process":11,"buffer":3,"debug":4,"deep-sort-object":6,"supports-color":12}]},{},[13])(13)
 });
