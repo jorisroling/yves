@@ -3072,14 +3072,18 @@ yves.defaults = {
     includes: null,
     excludes: null,
     obfuscate: null,
+    decycle: false,
 };
 
+yves.options = function(opts) {
+  yves.defaults = Object.assign({},yves.defaults,opts);// { ...yves.defaults, ...opts}
+}
 // Return a curried inspect() function, with the `options` argument filled in.
 yves.inspector = function (options) {
     var that = this;
     return function (obj, label, opts) {
         var myopts=merge(options || {}, opts || {});
-        if (myopts.sorted && typeof obj == 'object') {
+        if (myopts.sorted && typeOf(obj) == 'object') {
           obj=sortobject(obj)
         }
         var result=that.inspect.call(that, obj, label, myopts);
@@ -3198,7 +3202,7 @@ yves.console_unset = function() {
 yves.inspect = function (obj, label, options) {
     options = merge(this.defaults, options || {});
     stack = [];
-    return this.print(stringify(JSON.decycle(obj), options), label, options);
+    return this.print(stringify(options.decycle?JSON.decycle(obj):obj, options), label, options);
 };
 
 // Output using the 'stream', and an optional label
@@ -3297,6 +3301,7 @@ function stringify(obj, options) {
 
             case "string"   : obj = stringifyString((obj.indexOf("'") === -1 && !options.json)? ("'" + obj.replace(/'/g,"\\'") + "'") : ('"' + obj.replace(/"/g,'\\"') + '"'),options);
                               return stylize(obj, 'string');
+            case "buffer"   : return stringifyBuffer(obj, options, stack.length);
             case "regexp"   : return stylize('/' + obj.source + '/', 'regexp');
             case "number"   : return stylize(obj + '',    'number');
             case "function" : return options.stream ? stylize(options.functions?obj.toString():"Function", 'other') : '[Function]';
@@ -3313,6 +3318,10 @@ function stringify(obj, options) {
 
     return result;
 };
+
+function stringifyBuffer(obj, options, length) {
+  return obj.inspect()
+}
 
 function htmlspecialchars (string, quote_style, charset, double_encode) {
     var optTemp = 0,
@@ -3532,7 +3541,7 @@ function yvesObfuscate(key,obfuscates)
 // and does not output functions or prototype values.
 function stringifyObject(obj, options, level) {
   var clas = Object.prototype.toString.call(obj).slice(8, -1);
-    if ( obj instanceof Buffer) return 'Buffer';
+    // if ( obj instanceof Buffer) return 'Buffer';
     var out = [];
     var pretty = options.pretty && (Object.keys(obj).length > options.singleLineMax ||
                                     Object.keys(obj).some(function (k) { return typeof(obj[k]) === 'object' }));
@@ -3578,17 +3587,18 @@ function stringifyObject(obj, options, level) {
 // A better `typeof`
 function typeOf(value) {
   var s = typeof(value)
-  var types = [Object, Array, String, RegExp, Number, Function, Boolean, Date];
-
+  var types = [ Object, Array, String, RegExp, Number, Function, Boolean, Date, Buffer];
     if (s === 'object' || s === 'function') {
         if (value) {
           if (types) for (var ti in types) {
             var t = types[ti]
-            // types.forEach(function (t) {
-            if (value instanceof t) { s = t.name.toLowerCase() }
+            if (value instanceof t) { 
+              s = t.name.toLowerCase() 
+            }
           }
         } else { s = 'null' }
     }
+    // if (s === 'object' && Buffer.isBuffer(value)) s = 'buffer';
     return s;
 }
 
@@ -3620,6 +3630,7 @@ function merge(/* variable args */) {
     return target;
 }
 
+yves.typeOf = typeOf
 module.exports = yves;
 }).call(this,require('_process'),require("buffer").Buffer)
 },{"./cycle.js":1,"_process":11,"buffer":3,"debug":4,"deep-sort-object":6,"supports-color":12}]},{},[13])(13)

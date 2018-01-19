@@ -159,6 +159,21 @@ yves.inspect({
 }, "html",{html: true});
 
 
+var buf = new Buffer("joris is gek")
+yves.inspect({
+  date: new Date(),
+  buffer: buf,
+}, "buffer",{});
+
+// // yves.inspect(buf, "buffer",{});
+//
+// console.log(yves.typeOf(buf));
+// console.log(typeof buf);
+// console.log(buf.toString('hex'));
+// console.log(buf.inspect());
+//
+// console.log(buf);
+
 
 const debug = yves.debugger('test')
 debug('hello')
