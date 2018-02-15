@@ -30,7 +30,7 @@ obj.self = obj;
 yves.inspect(obj, "circular object");
 yves.inspect({hello: 'moto'}, "small object");
 yves.inspect({hello: new(Array)(6) }, "big object");
-yves.inspect(["hello 'world'", 'hello "world"'], "quotes");
+yves.inspect(["hello 'world'", 'hello "world"', 'hello `world`'], "quotes");
 yves.inspect({
     recommendations: [{
         id: 'a7a6576c2c822c8e2bd81a27e41437d8',
@@ -173,6 +173,16 @@ yves.inspect({
 // console.log(buf.inspect());
 //
 // console.log(buf);
+
+yves.inspect({
+  string: "\nHELLO\nWORLD",
+  templateStrings:false,
+}, "newlines",{templateStrings:false});
+
+yves.inspect({
+  string: "\nHELLO\nWORLD",
+  templateStrings:true,
+}, "newlines",{templateStrings:true});
 
 
 const debug = yves.debugger('test')
