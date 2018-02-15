@@ -2954,7 +2954,7 @@ module.exports = {
 };
 
 },{}],13:[function(require,module,exports){
-(function (process,Buffer){
+(function (process,global,Buffer){
 //
 // Yves - a customizable value inspector for Node.js
 //
@@ -3103,6 +3103,13 @@ yves.debugger = function(namespace, options) {
   } else if (!options) {
     var deb = debug(namespace);
     deb.log = (yves._console && yves._console.log)?yves._console.log.bind(console):console.log.bind(console);
+    if (typeof window != 'undefined' && window.document) {
+      if (!window.debug) window.debug = deb;
+    } else {
+      if (typeof process != 'undefined') {
+        if (!global.debug) global.debug = deb;
+      }
+    }    
     return deb;
   } else {
     debug.formatters[namespace] = (y) => {
@@ -3639,6 +3646,6 @@ function merge(/* variable args */) {
 
 yves.typeOf = typeOf
 module.exports = yves;
-}).call(this,require('_process'),require("buffer").Buffer)
+}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
 },{"./cycle.js":1,"_process":11,"buffer":3,"debug":4,"deep-sort-object":6,"supports-color":12}]},{},[13])(13)
 });
