@@ -3112,13 +3112,13 @@ yves.debugger = function(namespace, options) {
     }
     return deb;
   } else {
-    debug.formatters[namespace] = (y) => {
+    debug.formatters[namespace] = function(y) {
       return yves.inspector()(y, null, Object.assign(options,{ stream: null }))
     }
   }
 }
 
-if (!debug.formatters.y) debug.formatters.y = (y) => {
+if (!debug.formatters.y) debug.formatters.y = function(y) {
   return yves.inspector()(y, null, { stream: null })
 }
 
@@ -3316,13 +3316,13 @@ function stringify(obj, options) {
               return stylize(obj, 'string');
             }
             case "buffer"   : return stringifyBuffer(obj, options, stack.length);
-            case "regexp"   : return stylize('/' + obj.source + '/', 'regexp');
+            case "regexp"   : return stylize(obj.toString(), 'regexp');
             case "number"   : return stylize(obj + '',    'number');
             case "function" : return options.stream ? stylize(options.functions?obj.toString():"Function", 'other') : '[Function]';
             case "null"     : return stylize("null",      'special');
             case "undefined": return stylize("undefined", 'special');
             case "boolean"  : return stylize(obj + '',    'bool');
-            case "date"     : return stylize(obj.toUTCString(),'date');
+            case "date"     : return stylize('new Date("'+obj.toUTCString()+'")','date');
             case "array"    : return stringifyArray(obj,  options, stack.length);
             case "object"   : return stringifyObject(obj, options, stack.length);
         }

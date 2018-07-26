@@ -185,7 +185,7 @@ yves.inspect({
 }, "newlines",{templateStrings:true});
 
 
-const debug = yves.debugger('test')
+var debug = yves.debugger('test')
 debug('hello')
 debug('world')
 
