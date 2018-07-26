@@ -44,7 +44,7 @@
     "debug": "^3.1.0",
     "deep-sort-object": "^1.0.2",
     "pkginfo": "^0.4.1",
-    "supports-color": "^5.2.0"
+    "supports-color": "^5.4.0"
   },
   "devDependencies": {
     "browserify": "^16.2.2"
