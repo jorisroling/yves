@@ -1,6 +1,6 @@
 {
   "name": "yves",
-  "version": "1.0.56",
+  "version": "1.0.57",
   "description": "a customizable value inspector",
   "url": "http://github.com/jorisroling/yves",
   "repository": {
@@ -43,7 +43,7 @@
     "node": "> 0.1.90"
   },
   "dependencies": {
-    "debug": "^4.0.1",
+    "debug": "^3.2.5",
     "deep-sort-object": "^1.0.2",
     "pkginfo": "^0.4.1",
     "supports-color": "^5.5.0"
