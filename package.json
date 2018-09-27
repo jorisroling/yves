@@ -1,6 +1,6 @@
 {
   "name": "yves",
-  "version": "1.0.58",
+  "version": "1.0.59",
   "description": "a customizable value inspector",
   "url": "http://github.com/jorisroling/yves",
   "repository": {
@@ -28,12 +28,10 @@
     "MIT"
   ],
   "main": "./lib/yves",
-  "browser": "./dist/yves.js",
-  "unpkg": "./dist/yves.js",
   "scripts": {
     "test": "DEBUG=* node test/*-test.js",
     "build": "browserify --standalone yves . > dist/yves.js",
-    "no-prepublish": "npm run build"
+    "prepublish": "npm run build"
   },
   "directories": {
     "lib": "./lib",
@@ -43,7 +41,7 @@
     "node": "> 0.1.90"
   },
   "dependencies": {
-    "debug": "^3.1.0",
+    "debug": "^4.0.1",
     "deep-sort-object": "^1.0.2",
     "pkginfo": "^0.4.1",
     "supports-color": "^5.5.0"
