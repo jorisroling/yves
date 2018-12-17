@@ -3046,11 +3046,11 @@ function getCircularReplacer() {
 yves.inspector = function (options) {
     var that = this;
     return function (obj, label, opts) {
-        var myopts=merge(options || {}, opts || {});
-        if (myopts.sorted && typeOf(obj) == 'object') {
+        var lmyopts = merge(yves.defaults || {},options || {}, opts || {});
+        if (lmyopts.sorted && typeOf(obj) == 'object') {
           obj=sortobject(obj)
         }
-        if (myopts.decycle) {
+        if (lmyopts.decycle) {
           try {
             JSON.stringify(obj)
           } catch(e) {
@@ -3065,6 +3065,7 @@ yves.inspector = function (options) {
             }
           }
         }
+        var myopts=merge(options || {}, opts || {});
         var result=that.inspect.call(that, obj, label, myopts);
         if (myopts.html && !myopts.stream) {
             return '<pre class="yves" style="padding:8px;background-color: black;color: white;overflow: auto;border-radius: 6px;'+((myopts && myopts.styles && myopts.styles.all)?('color:'+myopts.styles.all+';'):'')+'">'+result+'</pre>';
@@ -3595,48 +3596,47 @@ function typeOf(value) {
   function isObject(x) {
     return x != null && (typeof x == "object" || typeof x == "function");
   }
-  var s = typeof(value)
-  var types = [ Object, Array, String, RegExp, Number, Function, Boolean, Date, Buffer];
-    if (s === 'object' || s === 'function') {
-        if (value) {
-          if (types) for (var ti in types) {
-            var t = types[ti]
-            if (value && isItA(value,t)) {
-              s = t.name.toLowerCase()
-            }
-          }
-        } else { s = 'null' }
-    }
-    // if (s === 'object' && Buffer.isBuffer(value)) s = 'buffer';
-    return s;
+  var s = typeof (value)
+  var types = [Object, Array, String, RegExp, Number, Function, Boolean, Date, Buffer];
+  if (s === 'object' || s === 'function') {
+    if (value) {
+      if (types) for (var ti in types) {
+        var t = types[ti]
+        if (value && isItA(value, t)) {
+          s = t.name.toLowerCase()
+        }
+      }
+    } else { s = 'null' }
+  }
+  return s;
 }
 
 function merge(/* variable args */) {
-    var objs = Array.prototype.slice.call(arguments);
-    var target = {};
+  var objs = Array.prototype.slice.call(arguments);
+  var target = {};
 
-    if (objs) for (var oi in objs) {
-      var o = objs[oi]
-    // objs.forEach(function (o) {
-      var oks=Object.keys(o)
-      if (oks) for (var oki in oks) {
-        var k = oks[oki]
-        // Object.keys(o).forEach(function (k) {
-            if (k === 'styles') {
-                if (! o.styles) {
-                    target.styles = false;
-                } else {
-                    target.styles = {}
-                    for (var s in o.styles) {
-                        target.styles[s] = o.styles[s];
-                    }
-                }
-            } else {
-                target[k] = o[k];
+  if (objs) for (var oi in objs) {
+    var o = objs[oi]
+    var oks = Object.keys(o)
+    if (oks) for (var oki in oks) {
+      var k = oks[oki]
+      if (typeof k === 'string') {
+        if (k === 'styles') {
+          if (!o.styles) {
+            target.styles = false;
+          } else {
+            target.styles = {}
+            for (var s in o.styles) {
+              target.styles[s] = o.styles[s];
             }
+          }
+        } else {
+          target[k] = o[k];
         }
+      }
     }
-    return target;
+  }
+  return target;
 }
 
 yves.typeOf = typeOf
