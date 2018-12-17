@@ -1,182 +1,4 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.yves = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
-/*
-    cycle.js
-    2017-02-07
-    Public Domain.
-    NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
-    This code should be minified before deployment.
-    See http://javascript.crockford.com/jsmin.html
-    USE YOUR OWN COPY. IT IS EXTREMELY UNWISE TO LOAD CODE FROM SERVERS YOU DO
-    NOT CONTROL.
-*/
-
-// The file uses the WeakMap feature of ES6.
-
-/*jslint es6, eval */
-
-/*property
-    $ref, decycle, forEach, get, indexOf, isArray, keys, length, push,
-    retrocycle, set, stringify, test
-*/
-
-if (typeof JSON.decycle !== "function") {
-    JSON.decycle = function decycle(object, replacer) {
-        "use strict";
-
-// Make a deep copy of an object or array, assuring that there is at most
-// one instance of each object or array in the resulting structure. The
-// duplicate references (which might be forming cycles) are replaced with
-// an object of the form
-
-//      {"$ref": PATH}
-
-// where the PATH is a JSONPath string that locates the first occurance.
-
-// So,
-
-//      var a = [];
-//      a[0] = a;
-//      return JSON.stringify(JSON.decycle(a));
-
-// produces the string '[{"$ref":"$"}]'.
-
-// If a replacer function is provided, then it will be called for each value.
-// A replacer function receives a value and returns a replacement value.
-
-// JSONPath is used to locate the unique object. $ indicates the top level of
-// the object or array. [NUMBER] or [STRING] indicates a child element or
-// property.
-
-        var objects = new WeakMap();     // object to path mappings
-
-        return (function derez(value, path) {
-
-// The derez function recurses through the object, producing the deep copy.
-
-            var old_path;   // The path of an earlier occurance of value
-            var nu;         // The new object or array
-
-// If a replacer function was provided, then call it to get a replacement value.
-
-            if (replacer !== undefined) {
-                value = replacer(value);
-            }
-
-// typeof null === "object", so go on if this value is really an object but not
-// one of the weird builtin objects.
-
-            if (
-                typeof value === "object" && value !== null &&
-                !(value instanceof Boolean) &&
-                !(value instanceof Date) &&
-                !(value instanceof Number) &&
-                !(value instanceof RegExp) &&
-                !(value instanceof String)
-            ) {
-
-// If the value is an object or array, look to see if we have already
-// encountered it. If so, return a {"$ref":PATH} object. This uses an
-// ES6 WeakMap.
-
-                old_path = objects.get(value);
-                if (old_path !== undefined) {
-                    return {$ref: old_path};
-                }
-
-// Otherwise, accumulate the unique value and its path.
-
-                objects.set(value, path);
-
-// If it is an array, replicate the array.
-
-                if (Array.isArray(value)) {
-                    nu = [];
-                    value.forEach(function (element, i) {
-                        nu[i] = derez(element, path + "[" + i + "]");
-                    });
-                } else {
-
-// If it is an object, replicate the object.
-
-                    nu = {};
-                    Object.keys(value).forEach(function (name) {
-                        nu[name] = derez(
-                            value[name],
-                            path + "[" + JSON.stringify(name) + "]"
-                        );
-                    });
-                }
-                return nu;
-            }
-            return value;
-        }(object, "$"));
-    };
-}
-
-
-if (typeof JSON.retrocycle !== "function") {
-    JSON.retrocycle = function retrocycle($) {
-        "use strict";
-
-// Restore an object that was reduced by decycle. Members whose values are
-// objects of the form
-//      {$ref: PATH}
-// are replaced with references to the value found by the PATH. This will
-// restore cycles. The object will be mutated.
-
-// The eval function is used to locate the values described by a PATH. The
-// root object is kept in a $ variable. A regular expression is used to
-// assure that the PATH is extremely well formed. The regexp contains nested
-// * quantifiers. That has been known to have extremely bad performance
-// problems on some browsers for very long strings. A PATH is expected to be
-// reasonably short. A PATH is allowed to belong to a very restricted subset of
-// Goessner's JSONPath.
-
-// So,
-//      var s = '[{"$ref":"$"}]';
-//      return JSON.retrocycle(JSON.parse(s));
-// produces an array containing a single element which is the array itself.
-
-        var px = /^\$(?:\[(?:\d+|"(?:[^\\"\u0000-\u001f]|\\([\\"\/bfnrt]|u[0-9a-zA-Z]{4}))*")\])*$/;
-
-        (function rez(value) {
-
-// The rez function walks recursively through the object looking for $ref
-// properties. When it finds one that has a value that is a path, then it
-// replaces the $ref object with a reference to the value that is found by
-// the path.
-
-            if (value && typeof value === "object") {
-                if (Array.isArray(value)) {
-                    value.forEach(function (element, i) {
-                        if (typeof element === "object" && element !== null) {
-                            var path = element.$ref;
-                            if (typeof path === "string" && px.test(path)) {
-                                value[i] = eval(path);
-                            } else {
-                                rez(element);
-                            }
-                        }
-                    });
-                } else {
-                    Object.keys(value).forEach(function (name) {
-                        var item = value[name];
-                        if (typeof item === "object" && item !== null) {
-                            var path = item.$ref;
-                            if (typeof path === "string" && px.test(path)) {
-                                value[name] = eval(path);
-                            } else {
-                                rez(item);
-                            }
-                        }
-                    });
-                }
-            }
-        }($));
-        return $;
-    };
-}
-},{}],2:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -329,7 +151,7 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],3:[function(require,module,exports){
+},{}],2:[function(require,module,exports){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -2108,7 +1930,7 @@ function numberIsNaN (obj) {
   return obj !== obj // eslint-disable-line no-self-compare
 }
 
-},{"base64-js":2,"ieee754":7}],4:[function(require,module,exports){
+},{"base64-js":1,"ieee754":6}],3:[function(require,module,exports){
 (function (process){
 "use strict";
 
@@ -2292,7 +2114,7 @@ formatters.j = function (v) {
 
 
 }).call(this,require('_process'))
-},{"./common":5,"_process":11}],5:[function(require,module,exports){
+},{"./common":4,"_process":10}],4:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2543,7 +2365,7 @@ function setup(env) {
 module.exports = setup;
 
 
-},{"ms":10}],6:[function(require,module,exports){
+},{"ms":9}],5:[function(require,module,exports){
 'use strict';
 
 var isPlainObject = require('is-plain-object');
@@ -2576,7 +2398,7 @@ function sort(src, comparator) {
 
 module.exports = sort;
 
-},{"is-plain-object":8}],7:[function(require,module,exports){
+},{"is-plain-object":7}],6:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = (nBytes * 8) - mLen - 1
@@ -2662,7 +2484,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],8:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 /*!
  * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
  *
@@ -2701,7 +2523,7 @@ module.exports = function isPlainObject(o) {
   return true;
 };
 
-},{"isobject":9}],9:[function(require,module,exports){
+},{"isobject":8}],8:[function(require,module,exports){
 /*!
  * isobject <https://github.com/jonschlinkert/isobject>
  *
@@ -2715,7 +2537,7 @@ module.exports = function isObject(val) {
   return val != null && typeof val === 'object' && Array.isArray(val) === false;
 };
 
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 /**
  * Helpers.
  */
@@ -2879,7 +2701,7 @@ function plural(ms, msAbs, n, name) {
   return Math.round(ms / n) + ' ' + name + (isPlural ? 's' : '');
 }
 
-},{}],11:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -3065,14 +2887,14 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 'use strict';
 module.exports = {
 	stdout: false,
 	stderr: false
 };
 
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 (function (process,global,Buffer){
 //
 // Yves - a customizable value inspector for Node.js
@@ -3087,8 +2909,6 @@ module.exports = {
 //       var yves = require('yves');
 //       yves.inspect(something); // inspect with the default settings
 //
-require('./cycle.js')
-
 function isItA(obj,A) {
   try {
     return obj instanceof A;
@@ -3104,34 +2924,34 @@ var stack = [];
 
 var verbose = false;
 
-function isCyclic (obj) {
-  var seenObjects = [];
-  var mark = String(Math.random());
+// function isCyclic (obj) {
+//   var seenObjects = [];
+//   var mark = String(Math.random());
 
-  function detect (obj) {
-    if (typeOf(obj) === 'object') {
-      if (mark in obj) {
-        return false;
-      }
-      obj[mark] = true;
-      seenObjects.push(obj);
-      for (var key in obj) {
-        if (obj.hasOwnProperty && obj.hasOwnProperty(key) && !detect(obj[key])) {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
+//   function detect (obj) {
+//     if (typeOf(obj) === 'object') {
+//       if (mark in obj) {
+//         return false;
+//       }
+//       obj[mark] = true;
+//       seenObjects.push(obj);
+//       for (var key in obj) {
+//         if (obj.hasOwnProperty && obj.hasOwnProperty(key) && !detect(obj[key])) {
+//           return false;
+//         }
+//       }
+//     }
+//     return true;
+//   }
 
-  var result = detect(obj);
+//   var result = detect(obj);
 
-  for (var i = 0; i < seenObjects.length; ++i) {
-    delete seenObjects[i][mark];
-  }
+//   for (var i = 0; i < seenObjects.length; ++i) {
+//     delete seenObjects[i][mark];
+//   }
 
-  return result;
-}
+//   return result;
+// }
 
 var yves = function() {
   var args=arguments;
@@ -3199,7 +3019,7 @@ yves.defaults = {
     includes: null,
     excludes: null,
     obfuscate: null,
-    decycle: false,
+    decycle: true,
     trailingComma: true,
     templateStrings: true,
 };
@@ -3207,6 +3027,21 @@ yves.defaults = {
 yves.options = function(opts) {
   yves.defaults = Object.assign({},yves.defaults,opts);// { ...yves.defaults, ...opts}
 }
+
+function getCircularReplacer() {
+  var seen = new WeakSet();
+  return (key, value) => {
+    if (typeof value === "object" && value !== null) {
+      if (seen.has(value)) {
+        return
+      }
+      seen.add(value)
+    }
+    return value
+  }
+}
+
+
 // Return a curried inspect() function, with the `options` argument filled in.
 yves.inspector = function (options) {
     var that = this;
@@ -3214,6 +3049,13 @@ yves.inspector = function (options) {
         var myopts=merge(options || {}, opts || {});
         if (myopts.sorted && typeOf(obj) == 'object') {
           obj=sortobject(obj)
+        }
+        if (myopts.decycle) {
+          try {
+            obj = JSON.parse(JSON.stringify(obj, getCircularReplacer()))
+          } catch(e) {
+            return `Error: ${e.message}`
+          }
         }
         var result=that.inspect.call(that, obj, label, myopts);
         if (myopts.html && !myopts.stream) {
@@ -3333,12 +3175,14 @@ yves.console_unset = function() {
   }
 }
 
+seenObjects = []
 // If we have a `stream` defined, use it to print a styled string,
 // if not, we just return the stringified object.
 yves.inspect = function (obj, label, options) {
     options = merge(this.defaults, options || {});
     stack = [];
-    return this.print(stringify(options.decycle?JSON.decycle(obj):obj, options), label, options);
+    seenObjects = []
+    return this.print(stringify(obj, options), label, options);
 };
 
 // Output using the 'stream', and an optional label
@@ -3461,6 +3305,10 @@ function stringify(obj, options) {
 };
 
 function stringifyBuffer(obj, options, length) {
+  if (seenObjects.indexOf(obj) !== -1) {
+    return stringify(`[Circular]`)
+  }
+  seenObjects.push(obj);
   return obj.inspect()
 }
 
@@ -3536,7 +3384,12 @@ function stringifyString (str, options) {
 // This function calls stringify() for each of the elements
 // in the array.
 function stringifyArray(ary, options, level) {
-    var out = [];
+  if (seenObjects.indexOf(ary) !== -1) {
+    return stringify(`[Circular]`)
+  }
+  seenObjects.push(ary);
+
+  var out = [];
     var pretty = options.pretty && (ary.length > 4 || ary.some(function (o) {
         return (o !== null && typeof(o) === 'object' && Object.keys(o).length > 0) ||
                (Array.isArray(o) && o.length > 0);
@@ -3681,6 +3534,11 @@ function yvesObfuscate(key,obfuscates)
 // This function calls stringify() for each of its values,
 // and does not output functions or prototype values.
 function stringifyObject(obj, options, level) {
+  if (seenObjects.indexOf(obj) !== -1) {
+    return stringify(`[Circular2]`)
+  }
+  seenObjects.push(obj);
+
   var clas = Object.prototype.toString.call(obj).slice(8, -1);
     var out = [];
     var pretty = options.pretty && (Object.keys(obj).length > options.singleLineMax ||
@@ -3776,5 +3634,5 @@ function merge(/* variable args */) {
 yves.typeOf = typeOf
 module.exports = yves;
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
-},{"./cycle.js":1,"_process":11,"buffer":3,"debug":4,"deep-sort-object":6,"supports-color":12}]},{},[13])(13)
+},{"_process":10,"buffer":2,"debug":3,"deep-sort-object":5,"supports-color":11}]},{},[12])(12)
 });

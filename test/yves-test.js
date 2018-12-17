@@ -1,6 +1,7 @@
 var util = require('util');
 var yves = require('../lib/yves');
 
+
 yves.inspect({
     number: 42,
     string: "John Galt",
@@ -22,6 +23,18 @@ yves.inspect({
     object: new(Object)({attr: []}),
     date: new(Date)
 }, "wrapped types");
+
+const o ={t:'circular object'}
+o.o = o
+
+yves.inspect({
+    circular: o
+}, "newlines",{templateStrings:false});
+  
+
+console.log(o)
+
+
 
 var obj = {};
 obj.that = { self: obj };
@@ -195,3 +208,4 @@ console.log('hello')
 console.log('world')
 
 console.dir({joris:'gek'})
+
