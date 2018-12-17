@@ -3202,7 +3202,7 @@ yves.inspect = function (obj, label, options) {
 // versus a printable character (`c`). So we resort to counting the
 // length manually.
 yves.print = function (str, label, options) {
-    if (!options.html) {
+    if (options && !options.html) {
         if (str) for (var c = 0, i = 0; i < str.length; i++) {
             if (str.charAt(i) === '\x1b') { i += 4 } // `4` because '\x1b[25m'.length + 1 == 5
             else if (c === options.maxLength) {
@@ -3211,14 +3211,14 @@ yves.print = function (str, label, options) {
             } else { c++ }
         }
     }
-    if (options.stream) {
+    if (options && options.stream) {
       return options.stream.write.call(options.stream, (label ?
-          this.stylize(label, options.styles.label, options) + ': ' : '') +
-          this.stylize(str,   options.styles.all, options) + (options.html?'':(options.colors?'\x1b[0m':'')) + "\n");
+          this.stylize(label, options && options.styles && options.styles.label, options) + ': ' : '') +
+          this.stylize(str,   options && options.styles && options.styles.all, options) + (options.html?'':(options.colors?'\x1b[0m':'')) + "\n");
     } else {
       return (label ?
-          this.stylize(label, options.styles.label, options) + ': ' : '') +
-          this.stylize(str,   options.styles.all, options) + (options.html?'':(options.colors?'\x1b[0m':'')) ;
+          this.stylize(label, options && options.styles && options.styles.label, options) + ': ' : '') +
+          this.stylize(str,   options && options.styles && options.styles.all, options) + (options && options.html?'':(options && options.colors?'\x1b[0m':'')) ;
     }
 };
 
@@ -3226,7 +3226,7 @@ yves.print = function (str, label, options) {
 // I'd like this to support passing multiple
 // styles.
 yves.stylize = function (str, style, options) {
-    if (options.colors) {
+    if (options && options.colors) {
         if (options.html) {
             var codes = {
                 'bold'      : 'font-weight:bold',
@@ -3256,7 +3256,7 @@ yves.stylize = function (str, style, options) {
             }, endCode;
 
             if (style && codes[style]) {
-                endCode = (codes[style][1] === 39 && options.styles.all) ? codes[options.styles.all][0]
+                endCode = (codes[style][1] === 39 && options && options.styles && options.styles.all) ? codes[options.styles.all][0]
                                                                  : codes[style][1];
                 return '\x1b[' + codes[style][0] + 'm' + str +
                        '\x1b[' + endCode + 'm';
@@ -3274,7 +3274,7 @@ yves.stylize = function (str, style, options) {
 function stringify(obj, options) {
     var that = this;
     var stylize = function (str, style) {
-        return yves.stylize(str, options.styles[style], options)
+        return yves.stylize(str, options && options.styles && options.styles[style], options)
     }
     var index
     var result;
@@ -3288,17 +3288,17 @@ function stringify(obj, options) {
     result = (function (obj) {
         switch (typeOf(obj)) {
             case "string"   : {
-              if (options.templateStrings && !options.json && obj.match(/[\r\n\t\u0001-\u001F]/)) {
+              if (options && options.templateStrings && !options.json && obj.match(/[\r\n\t\u0001-\u001F]/)) {
                 obj = ("`" + obj.replace(/`/g,"\\`") + "`");
               } else {
-                obj = stringifyString((obj.indexOf("'") === -1 && !options.json)? ("'" + obj.replace(/'/g,"\\'") + "'") : ('"' + obj.replace(/"/g,'\\"') + '"'),options);
+                obj = stringifyString((obj.indexOf("'") === -1 && !(options && options.json))? ("'" + obj.replace(/'/g,"\\'") + "'") : ('"' + obj.replace(/"/g,'\\"') + '"'),options);
               }
               return stylize(obj, 'string');
             }
             case "buffer"   : return stringifyBuffer(obj, options, stack.length);
             case "regexp"   : return stylize(obj.toString(), 'regexp');
             case "number"   : return stylize(obj + '',    'number');
-            case "function" : return options.stream ? stylize(options.functions?obj.toString():"Function", 'other') : '[Function]';
+            case "function" : return options && options.stream ? stylize(options.functions?obj.toString():"Function", 'other') : '[Function]';
             case "null"     : return stylize("null",      'special');
             case "undefined": return stylize("undefined", 'special');
             case "boolean"  : return stylize(obj + '',    'bool');
@@ -3368,11 +3368,11 @@ function htmlspecialchars (string, quote_style, charset, double_encode) {
 // Escape invisible characters in a string
 function stringifyString (str, options) {
 	var result;
-	if (options.escape) {
+	if (options && options.escape) {
 	    result=str.replace(/\r/g, '\\r').replace(/\n/g, '\\n').replace(/\t/g, '\\t').replace(/[\u0001-\u001F]/g, function (match) {
 	        return '\\x' + match[0].charCodeAt(0).toString(16);
 	    });
-		if (options.html) {
+		if (options && options.html) {
 			result=htmlspecialchars(result);
 		}
 	} else {
@@ -3380,8 +3380,8 @@ function stringifyString (str, options) {
 	}
 
     // Truncate the string if a maximum length is configured
-    var truncate = options.hasOwnProperty('maxStringLength') && options.maxStringLength >= 0;
-    if(truncate && result.length > options.maxStringLength) {
+    var truncate = options && options.hasOwnProperty('maxStringLength') && options.maxStringLength >= 0;
+    if(truncate && options && result.length > options.maxStringLength) {
         var length = Math.min(result.length, options.maxStringLength - 3);
         result = result.substr(0, length) + "...";
     }
@@ -3399,15 +3399,15 @@ function stringifyArray(ary, options, level) {
   seenObjects.push(ary);
 
   var out = [];
-    var pretty = options.pretty && (ary.length > 4 || ary.some(function (o) {
+    var pretty = options && options.pretty && (ary.length > 4 || ary.some(function (o) {
         return (o !== null && typeof(o) === 'object' && Object.keys(o).length > 0) ||
                (Array.isArray(o) && o.length > 0);
     }));
     var ws = pretty ? '\n' + new(Array)(level * options.indent + 1).join(' ') : ' ';
 
-    var truncate = options.hasOwnProperty('maxArrayLength') && options.maxArrayLength >= 0;
+    var truncate = options && options.hasOwnProperty('maxArrayLength') && options.maxArrayLength >= 0;
 
-    var length = truncate ? Math.min(ary.length, options.maxArrayLength) : ary.length;
+    var length = truncate ? Math.min(ary.length, options && options.maxArrayLength) : ary.length;
     for (var i = 0; i < length; i++) {
         out.push(stringify(ary[i], options));
     }
@@ -3421,7 +3421,7 @@ function stringifyArray(ary, options, level) {
         return '[]';
     } else {
         return '[' + ws
-                   + out.join(',' + (pretty ? ws : ' '))+ ((options.json || !options.trailingComma || !pretty)?'':',')
+                   + out.join(',' + (pretty ? ws : ' '))+ (((options && (options.json || !options.trailingComma)) || !pretty)?'':',')
                    + (pretty ? ws.slice(0, -1*options.indent) : ws) +
                ']';
     }
@@ -3544,48 +3544,48 @@ function yvesObfuscate(key,obfuscates)
 // and does not output functions or prototype values.
 function stringifyObject(obj, options, level) {
   if (seenObjects.indexOf(obj) !== -1) {
-    return stringify(`[Circular2]`)
+    return stringify(`[Circular]`)
   }
   seenObjects.push(obj);
 
   var clas = Object.prototype.toString.call(obj).slice(8, -1);
     var out = [];
-    var pretty = options.pretty && (Object.keys(obj).length > options.singleLineMax ||
+    var pretty = options && options.pretty && (Object.keys(obj).length > options.singleLineMax ||
                                     Object.keys(obj).some(function (k) { return typeof(obj[k]) === 'object' }));
     var ws = pretty ? '\n' + new(Array)(level * options.indent + 1).join(' ') : ' ';
 
-    var keys = options.showHidden ? Object.keys(obj) : Object.getOwnPropertyNames(obj);
-    if (options.sortKeys) keys.sort();
+    var keys = options && options.showHidden ? Object.keys(obj) : Object.getOwnPropertyNames(obj);
+    if (options && options.sortKeys) keys.sort();
 
-    var truncate = options.hasOwnProperty('maxObjectKeys') && options.maxObjectKeys >= 0;
+    var truncate = options && options.hasOwnProperty('maxObjectKeys') && options.maxObjectKeys >= 0;
 
     // Slice the keys to the maximum length if they exceed the maxObjectKeys option
-    var includeKeys = (truncate) ? keys.slice(0, options.maxObjectKeys) : keys;
+    var includeKeys = (truncate) ? keys.slice(0, options && options.maxObjectKeys) : keys;
     if (includeKeys) for (var ki in includeKeys) {
       var k = includeKeys[ki]
     // includeKeys.forEach(function (k) {
-  		if (!(level== 1 && options.exclude && ~options.exclude.indexOf(k))) {
+  		if (!(level== 1 && options && options.exclude && ~options.exclude.indexOf(k))) {
   			if (Object.prototype.hasOwnProperty.call(obj, k)
-          && (!yvesExclude(k, options.excludes))
-          && (yvesInclude(k, options.includes))
+          && (!yvesExclude(k, options && options.excludes))
+          && (yvesInclude(k, options && options.includes))
           // && (!options.obfuscate || !options.obfuscate.length || )
-  			  && !(isItA(obj[k],Function) && options.hideFunctions)) {
-  	            out.push((options.json?'"':'')+yves.stylize(options.json?k:quote_reserved_words(k), options.styles.key, options) + (options.json?'"':'') + ': ' +
-  						 stringify((yvesObfuscate(k,options.obfuscates)) ? '<<obfuscated>>' : obj[k], options));
+  			  && !(isItA(obj[k],Function) && options && options.hideFunctions)) {
+  	            out.push((options && options.json?'"':'')+yves.stylize(options && options.json?k:quote_reserved_words(k), options && options.styles && options.styles.key, options) + (options && options.json?'"':'') + ': ' +
+  						 stringify((yvesObfuscate(k,options && options.obfuscates)) ? '<<obfuscated>>' : obj[k], options));
   			}
   		}
     }
 
     // Append a special String if the Object was truncated
     if (includeKeys.length < keys.length) {
-        out.push(yves.stylize('<<truncated>>', options.styles.key, options.styles));
+        out.push(yves.stylize('<<truncated>>', options && options.styles && options.styles.key, options && options.styles));
     }
 
     if (out.length === 0) {
         return '{}';
     } else {
         return "{" + ws
-                  + out.join(',' + (pretty ? ws : ' ')) + ((options.json || !options.trailingComma || !pretty)?'':',')
+                  + out.join(',' + (pretty ? ws : ' ')) + ((options && (options.json || !options.trailingComma) || !pretty)?'':',')
                    + (pretty ? ws.slice(0, -1*options.indent) : ws) +
                "}";
    }
@@ -3641,6 +3641,7 @@ function merge(/* variable args */) {
 
 yves.typeOf = typeOf
 module.exports = yves;
+
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
 },{"_process":10,"buffer":2,"debug":3,"deep-sort-object":5,"supports-color":11}]},{},[12])(12)
 });
