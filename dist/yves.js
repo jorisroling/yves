@@ -3030,7 +3030,7 @@ yves.options = function(opts) {
 
 function getCircularReplacer() {
   var seen = new WeakSet();
-  return (key, value) => {
+  return function(key, value) {
     if (typeof value === "object" && value !== null) {
       if (seen.has(value)) {
         return
@@ -3058,10 +3058,10 @@ yves.inspector = function (options) {
               try {
                 obj = JSON.parse(JSON.stringify(obj, getCircularReplacer()))
               } catch(e) {
-                return `Error: ${e.message}`
+                return 'Error: ' + e.message
               }
             } else {
-              return `Error: ${e.message}`
+              return 'Error: ' + e.message
             }
           }
         }
