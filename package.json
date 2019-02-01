@@ -24,9 +24,7 @@
       "email": "charlie@nodejitsu.com"
     }
   ],
-  "licenses": [
-    "MIT"
-  ],
+  "license": "MIT",
   "main": "./lib/yves",
   "scripts": {
     "test": "DEBUG=* node test/*-test.js",
@@ -41,10 +39,10 @@
     "node": "> 0.1.90"
   },
   "dependencies": {
-    "debug": "^3.1.0",
+    "debug": "^4.1.1",
     "deep-sort-object": "^1.0.2",
     "pkginfo": "^0.4.1",
-    "supports-color": "^5.5.0"
+    "supports-color": "^6.1.0"
   },
   "devDependencies": {
     "browserify": "^16.2.3"
