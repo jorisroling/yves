@@ -1,6 +1,6 @@
 {
   "name": "yves",
-  "version": "1.0.73",
+  "version": "1.0.74",
   "description": "a customizable value inspector",
   "url": "http://github.com/jorisroling/yves",
   "repository": {
@@ -45,6 +45,6 @@
     "supports-color": "^7.1.0"
   },
   "devDependencies": {
-    "browserify": "^16.5.0"
+    "browserify": "^16.5.1"
   }
 }
