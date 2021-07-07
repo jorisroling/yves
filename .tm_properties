@@ -1,6 +1,2 @@
-<<<<<<< HEAD
 exclude="{$exclude,node_modules,bundle,.git}"
-=======
-exclude="{$exclude,node_modules,bundle,.git,versions,baas-v1}"
->>>>>>> master
 # include="{$include}"
