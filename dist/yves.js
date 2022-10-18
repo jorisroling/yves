@@ -3441,7 +3441,7 @@ function stringify(obj, options) {
             case "null"     : return stylize("null",      'special');
             case "undefined": return stylize("undefined", 'special');
             case "boolean"  : return stylize(obj + '',    'bool');
-            case "date"     : return stylize('new Date("'+obj.toUTCString()+'")','date');
+            case "date"     : return stylize('new Date("'+obj.toISOString()+'")','date');
             case "array"    : return stringifyArray(obj,  options, stack.length);
             case "object"   : return stringifyObject(obj, options, stack.length);
         }
