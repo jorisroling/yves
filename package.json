@@ -41,6 +41,7 @@
   "dependencies": {
     "debug": "^4.3.4",
     "deep-sort-object": "^1.0.2",
+    "jsonc": "^2.0.0",
     "pkginfo": "^0.4.1",
     "supports-color": "^8.1.1"
   },

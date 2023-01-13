@@ -172,7 +172,7 @@ yves.inspect({
 }, "html",{html: true});
 
 
-var buf = new Buffer("joris is gek")
+var buf = new Buffer.from("joris is gek")
 yves.inspect({
   date: new Date(),
   buffer: buf,
@@ -209,3 +209,9 @@ console.log('world')
 
 console.dir({joris:'gek'})
 
+let objA = {a:1,b:2}
+objA.c=objA
+
+console.log(objA)
+
+yves.inspect(objA)
