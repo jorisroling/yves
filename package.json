@@ -29,7 +29,7 @@
   "main": "./lib/yves",
   "scripts": {
     "test": "DEBUG=* node test/*-test.js",
-    "build": "browserify --standalone yves . > dist/yves.js",
+    "build": "browserify -p esmify --standalone yves . > dist/yves.js",
     "lint": "eslint .",
     "prepublish": "npm run build"
   },
@@ -44,11 +44,11 @@
     "debug": "^4.3.4",
     "deep-sort-object": "^1.0.2",
     "jsonc": "^2.0.0",
-    "pkginfo": "^0.4.1",
-    "supports-color": "^8.1.1"
+    "pkginfo": "^0.4.1"
   },
   "devDependencies": {
     "browserify": "^17.0.0",
-    "eslint": "^8.33.0"
+    "eslint": "^8.33.0",
+    "esmify": "^2.1.1"
   }
 }
