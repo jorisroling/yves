@@ -7,6 +7,7 @@
     "type": "git",
     "url": "https://github.com/jorisroling/yves.git"
   },
+  "type": "module",
   "keywords": [
     "inspector",
     "debug",
@@ -29,6 +30,7 @@
   "scripts": {
     "test": "DEBUG=* node test/*-test.js",
     "build": "browserify --standalone yves . > dist/yves.js",
+    "lint": "eslint .",
     "prepublish": "npm run build"
   },
   "directories": {
@@ -46,6 +48,7 @@
     "supports-color": "^8.1.1"
   },
   "devDependencies": {
-    "browserify": "^17.0.0"
+    "browserify": "^17.0.0",
+    "eslint": "^8.33.0"
   }
 }
