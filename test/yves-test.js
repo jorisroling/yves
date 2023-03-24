@@ -1,5 +1,5 @@
 import util from 'util'
-import yves from '../lib/yves.js'
+import yves from '../lib/yves.mjs'
 
 
 yves.inspect( {

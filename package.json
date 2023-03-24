@@ -1,6 +1,6 @@
 {
   "name": "yves",
-  "version": "1.0.88",
+  "version": "1.0.89",
   "description": "a customizable value inspector",
   "url": "http://github.com/jorisroling/yves",
   "repository": {
@@ -26,7 +26,7 @@
     }
   ],
   "license": "MIT",
-  "main": "./lib/yves.js",
+  "main": "./lib/yves.mjs",
   "scripts": {
     "test": "DEBUG=* node test/*-test.js",
     "build": "browserify -p esmify --standalone yves . > dist/yves.js",
