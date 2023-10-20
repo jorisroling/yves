@@ -1,11 +1,11 @@
 {
   "name": "yves",
-  "version": "1.0.91",
+  "version": "1.0.92",
   "description": "a customizable value inspector",
   "url": "http://github.com/jorisroling/yves",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jorisroling/yves.git"
+    "url": "git+https://github.com/jorisroling/yves.git"
   },
   "type": "module",
   "keywords": [
