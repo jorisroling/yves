@@ -41,14 +41,14 @@
     "node": "> 0.1.90"
   },
   "dependencies": {
-    "debug": "^4.3.6",
+    "debug": "^4.4.0",
     "deep-sort-object": "^1.0.2",
     "jsonc": "^2.0.0",
     "pkginfo": "^0.4.1"
   },
   "devDependencies": {
-    "browserify": "^17.0.0",
-    "eslint": "^9.9.1",
+    "browserify": "^17.0.1",
+    "eslint": "^9.20.1",
     "esmify": "^2.1.1"
   }
 }
