@@ -42,9 +42,7 @@
   },
   "dependencies": {
     "debug": "^4.4.3",
-    "deep-sort-object": "^1.0.2",
-    "jsonc": "^2.0.0",
-    "pkginfo": "^0.4.1"
+    "deep-sort-object": "^1.0.2"
   },
   "devDependencies": {
     "browserify": "^17.0.1",
