@@ -15,20 +15,18 @@
     "print"
   ],
   "author": "Joris Röling <joris@bonboa.com>",
-  "contributors": [
-    {
-      "name": "Alexis Sellier",
-      "email": "self@cloudhead.net"
-    },
-    {
-      "name": "Charlie Robbins",
-      "email": "charlie@nodejitsu.com"
-    }
-  ],
   "license": "MIT",
   "main": "./lib/yves.mjs",
+  "exports": {
+    ".": "./lib/yves.mjs"
+  },
+  "files": [
+    "lib",
+    "dist"
+  ],
   "scripts": {
-    "test": "DEBUG=* node test/*-test.js",
+    "test": "vitest run",
+    "demo": "DEBUG=* node test/yves-test.js",
     "build": "browserify -p esmify --standalone yves . > dist/yves.js",
     "lint": "eslint .",
     "prepublish": "npm run build"
@@ -38,7 +36,7 @@
     "test": "./test"
   },
   "engines": {
-    "node": "> 0.1.90"
+    "node": ">= 18"
   },
   "dependencies": {
     "debug": "^4.4.3",
@@ -47,6 +45,7 @@
   "devDependencies": {
     "browserify": "^17.0.1",
     "eslint": "^10.0.0",
-    "esmify": "^2.1.1"
+    "esmify": "^2.1.1",
+    "vitest": "^3.0.0"
   }
 }
