@@ -3137,7 +3137,8 @@ function stringify(obj, options, ctx) {
       case 'string':
         {
           if (options?.templateStrings && !options?.json && /[\r\n\t\u0001-\u001F]/u.test(obj)) {
-            return stylize('`' + obj.replace(/`/g, '\\`') + '`', 'string');
+            const escaped = options?.html ? htmlEscape(obj.replace(/`/g, '\\`')) : obj.replace(/`/g, '\\`');
+            return stylize('`' + escaped + '`', 'string');
           }
           const quoted = obj.indexOf("'") === -1 && !options?.json ? `'${obj.replace(/'/g, "\\'")}'` : `"${obj.replace(/"/g, '\\"')}"`;
           return stylize(stringifyString(quoted, options), 'string');
