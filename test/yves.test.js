@@ -26,9 +26,9 @@ describe('typeOf', () => {
   })
 
   it('identifies wrapped types', () => {
-    expect(yves.typeOf(new Number(42))).toBe('number') // eslint-disable-line no-new-wrappers
-    expect(yves.typeOf(new String('hi'))).toBe('string') // eslint-disable-line no-new-wrappers
-    expect(yves.typeOf(new Boolean(true))).toBe('boolean') // eslint-disable-line no-new-wrappers
+    expect(yves.typeOf(new Number(42))).toBe('number')  
+    expect(yves.typeOf(new String('hi'))).toBe('string')  
+    expect(yves.typeOf(new Boolean(true))).toBe('boolean')  
     expect(yves.typeOf(new RegExp('abc'))).toBe('regexp')
     expect(yves.typeOf(new Array(3))).toBe('array')
   })
@@ -36,11 +36,11 @@ describe('typeOf', () => {
 
 describe('stringify native types', () => {
   it('formats strings', () => {
-    expect(strip(inspect('hello'))).toBe("'hello'")
+    expect(strip(inspect('hello'))).toBe('\'hello\'')
   })
 
   it('formats strings with single quotes using double quotes', () => {
-    expect(strip(inspect("it's"))).toBe('"it\'s"')
+    expect(strip(inspect('it\'s'))).toBe('"it\'s"')
   })
 
   it('formats numbers', () => {
@@ -87,7 +87,7 @@ describe('stringify native types', () => {
 
 describe('arrays', () => {
   it('formats simple arrays inline', () => {
-    expect(strip(inspect(['a', 'b', 'c']))).toBe("[ 'a', 'b', 'c' ]")
+    expect(strip(inspect(['a', 'b', 'c']))).toBe('[ \'a\', \'b\', \'c\' ]')
   })
 
   it('formats empty arrays', () => {
@@ -101,16 +101,16 @@ describe('arrays', () => {
 
   it('respects maxArrayLength', () => {
     const result = strip(inspect(['a', 'b', 'c'], null, { maxArrayLength: 2 }))
-    expect(result).toContain("'a'")
-    expect(result).toContain("'b'")
+    expect(result).toContain('\'a\'')
+    expect(result).toContain('\'b\'')
     expect(result).toContain('<<truncated>>')
-    expect(result).not.toContain("'c'")
+    expect(result).not.toContain('\'c\'')
   })
 
   it('handles maxArrayLength=0', () => {
     const result = strip(inspect(['a', 'b'], null, { maxArrayLength: 0 }))
     expect(result).toContain('<<truncated>>')
-    expect(result).not.toContain("'a'")
+    expect(result).not.toContain('\'a\'')
   })
 })
 
@@ -132,10 +132,10 @@ describe('objects', () => {
 
   it('respects maxObjectKeys', () => {
     const result = strip(inspect({ a: 'A', b: 'B', c: 'C' }, null, { maxObjectKeys: 2 }))
-    expect(result).toContain("a: 'A'")
-    expect(result).toContain("b: 'B'")
+    expect(result).toContain('a: \'A\'')
+    expect(result).toContain('b: \'B\'')
     expect(result).toContain('<<truncated>>')
-    expect(result).not.toContain("c: 'C'")
+    expect(result).not.toContain('c: \'C\'')
   })
 
   it('handles maxObjectKeys=0', () => {
@@ -152,7 +152,7 @@ describe('objects', () => {
 
   it('quotes reserved words as keys', () => {
     const result = strip(inspect({ class: 1 }))
-    expect(result).toContain("'class': 1")
+    expect(result).toContain('\'class\': 1')
   })
 
   it('sorts keys when sortKeys is set', () => {
@@ -195,12 +195,12 @@ describe('circular references', () => {
 describe('string truncation', () => {
   it('truncates long strings', () => {
     const result = strip(inspect('This String is way too long', null, { maxStringLength: 12 }))
-    expect(result).toBe("'This Str...")
+    expect(result).toBe('\'This Str...')
   })
 
   it('does not truncate short-enough strings', () => {
     const result = strip(inspect('short', null, { maxStringLength: 100 }))
-    expect(result).toBe("'short'")
+    expect(result).toBe('\'short\'')
   })
 
   it('truncates to ... when maxStringLength is 0', () => {
@@ -214,7 +214,7 @@ describe('include/exclude/obfuscate filters', () => {
 
   it('includes only matching keys', () => {
     const result = strip(inspect(obj, null, { includes: ['name', 'age'] }))
-    expect(result).toContain("name: 'John'")
+    expect(result).toContain('name: \'John\'')
     expect(result).toContain('age: 30')
     expect(result).not.toContain('secret')
     expect(result).not.toContain('score')
@@ -242,15 +242,15 @@ describe('include/exclude/obfuscate filters', () => {
 
   it('obfuscates matching keys', () => {
     const result = strip(inspect(obj, null, { obfuscates: ['secret'] }))
-    expect(result).toContain("secret: '<<obfuscated>>'")
-    expect(result).toContain("name: 'John'")
+    expect(result).toContain('secret: \'<<obfuscated>>\'')
+    expect(result).toContain('name: \'John\'')
   })
 
   it('obfuscates keys matching regex', () => {
     const result = strip(inspect(obj, null, { obfuscates: [/^s/] }))
-    expect(result).toContain("secret: '<<obfuscated>>'")
-    expect(result).toContain("score: '<<obfuscated>>'")
-    expect(result).toContain("name: 'John'")
+    expect(result).toContain('secret: \'<<obfuscated>>\'')
+    expect(result).toContain('score: \'<<obfuscated>>\'')
+    expect(result).toContain('name: \'John\'')
   })
 })
 
@@ -320,13 +320,13 @@ describe('inspector currying', () => {
   it('applies base options', () => {
     const myInspect = yves.inspector({ stream: null, maxStringLength: 5 })
     const result = strip(myInspect('hello world'))
-    expect(result).toBe("'h...")
+    expect(result).toBe('\'h...')
   })
 
   it('allows per-call overrides', () => {
     const myInspect = yves.inspector({ stream: null, maxStringLength: 5 })
     const result = strip(myInspect('hello world', null, { maxStringLength: 100 }))
-    expect(result).toBe("'hello world'")
+    expect(result).toBe('\'hello world\'')
   })
 })
 
@@ -374,13 +374,13 @@ describe('edge cases', () => {
   it('handles mixed arrays', () => {
     const result = strip(inspect([1, 'two', true, null]))
     expect(result).toContain('1')
-    expect(result).toContain("'two'")
+    expect(result).toContain('\'two\'')
     expect(result).toContain('true')
     expect(result).toContain('null')
   })
 
   it('handles empty string', () => {
     const result = strip(inspect(''))
-    expect(result).toBe("''")
+    expect(result).toBe('\'\'')
   })
 })
