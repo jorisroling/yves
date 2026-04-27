@@ -3140,7 +3140,7 @@ function stringify(obj, options, ctx) {
             const escaped = options?.html ? htmlEscape(obj.replace(/`/g, '\\`')) : obj.replace(/`/g, '\\`');
             return stylize('`' + escaped + '`', 'string');
           }
-          const quoted = obj.indexOf("'") === -1 && !options?.json ? `'${obj.replace(/'/g, "\\'")}'` : `"${obj.replace(/"/g, '\\"')}"`;
+          const quoted = obj.indexOf('\'') === -1 && !options?.json ? `'${obj.replace(/'/g, '\\\'')}'` : `"${obj.replace(/"/g, '\\"')}"`;
           return stylize(stringifyString(quoted, options), 'string');
         }
       case 'buffer':

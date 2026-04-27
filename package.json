@@ -47,7 +47,7 @@
   "devDependencies": {
     "browserify": "^17.0.1",
     "eslint": "^10.2.1",
-    "esmify": "^0.1.2",
+    "esmify": "^2.1.1",
     "vitest": "^4.1.5"
   }
 }
