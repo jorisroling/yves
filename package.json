@@ -42,12 +42,13 @@
     "@eslint/js": "^10.0.1",
     "debug": "^4.4.3",
     "deep-sort-object": "^1.0.2",
-    "globals": "^17.5.0"
+    "globals": "^17.6.0"
   },
   "devDependencies": {
+    "shell-quote": ">=1.8.4",
     "browserify": "^17.0.1",
-    "eslint": "^10.2.1",
+    "eslint": "^10.4.1",
     "esmify": "^2.1.1",
-    "vitest": "^4.1.5"
+    "vitest": "^4.1.8"
   }
 }
